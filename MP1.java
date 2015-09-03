@@ -69,23 +69,23 @@ public class MP1 {
         	while (curPos < indices.length && indices[curPos] == lineNo)
         	{
         		StringTokenizer st = new StringTokenizer(line, delimiters);
-            	while (st.hasMoreTokens())
-            	{
-            		String token = st.nextToken();
-            		token = token.toLowerCase();
-            		token = token.trim();
-            		if (Arrays.asList(stopWordsArray).contains(token)) continue;
-            		if (wordToOccurrences.containsKey(token))
+            		while (st.hasMoreTokens())
             		{
-            			wordToOccurrences.put(token, wordToOccurrences.get(token) + 1);
+            			String token = st.nextToken();
+            			token = token.toLowerCase();
+            			token = token.trim();
+            			if (Arrays.asList(stopWordsArray).contains(token)) continue;
+            			if (wordToOccurrences.containsKey(token))
+            			{
+            				wordToOccurrences.put(token, wordToOccurrences.get(token) + 1);
+            			}
+            			else
+            			{
+            				wordToOccurrences.put(token, 1);
+            			}
             		}
-            		else
-            		{
-            			wordToOccurrences.put(token, 1);
-            		}
-            	}
             	
-            	curPos ++;
+            		curPos ++;
         	}
         	
         	lineNo ++;
