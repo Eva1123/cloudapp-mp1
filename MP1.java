@@ -1,8 +1,14 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.HashMap;
+import java.util.Collections;
+import java.io.FileReader;
 
 public class MP1 {
     Random generator;
@@ -52,9 +58,80 @@ public class MP1 {
     public String[] process() throws Exception {
         String[] ret = new String[20];
        
-        //TODO
+        BufferedReader br = new BufferedReader(
+        		new InputStreamReader(new FileInputStream(new File(inputFileName)), "UTF-8"));
+        String line = null; int lineNo = 0; int curPos = 0;
+        int[] indices = toPrimitiveInts(getIndexes());
+        Arrays.sort(indices);
+        HashMap<String, Integer> wordToOccurrences = new HashMap<String, Integer>();
+        while ((line = br.readLine()) != null)
+        {       	
+        	while (curPos < indices.length && indices[curPos] == lineNo)
+        	{
+        		StringTokenizer st = new StringTokenizer(line, delimiters);
+            	while (st.hasMoreTokens())
+            	{
+            		String token = st.nextToken();
+            		token = token.toLowerCase();
+            		token = token.trim();
+            		if (Arrays.asList(stopWordsArray).contains(token)) continue;
+            		if (wordToOccurrences.containsKey(token))
+            		{
+            			wordToOccurrences.put(token, wordToOccurrences.get(token) + 1);
+            		}
+            		else
+            		{
+            			wordToOccurrences.put(token, 1);
+            		}
+            	}
+            	
+            	curPos ++;
+        	}
+        	
+        	lineNo ++;
+        }
+        
+        List<Map.Entry<String, Integer>> sortedList = 
+        		new LinkedList<Map.Entry<String, Integer>>(wordToOccurrences.entrySet());
+        Collections.sort(sortedList, new Comparator<Map.Entry<String, Integer>>(){
+			public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2)
+			{
+				int valueComp = -(o1.getValue().compareTo(o2.getValue()));
+				return valueComp == 0 ? o1.getKey().compareTo(o2.getKey()) : valueComp;
+			}
+		});
+        
+        ret = getMostFreqntWords(sortedList);
 
         return ret;
+    }
+    
+    private int[] toPrimitiveInts(Integer[] indices)
+    {
+    	int[] results = new int[indices.length];
+    	for (int i = 0; i < indices.length; i ++)
+    	{
+    		results[i] = indices[i].intValue();
+    	}
+    	return results;
+    }
+    
+    private String[] getMostFreqntWords(List<Map.Entry<String, Integer>> list)
+    {
+    	String[] mostFreqntWords = new String[20]; 
+    	int i = 0;
+    	for (i = 0; i < 20; i ++)
+    	{
+    		mostFreqntWords[i] = "";
+    	}
+
+    	i = 0;
+    	for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+			Map.Entry<String, Integer> entry = it.next();
+			mostFreqntWords[i++] = entry.getKey();
+			if (i == 20) break;
+		}
+    	return mostFreqntWords;
     }
 
     public static void main(String[] args) throws Exception {
